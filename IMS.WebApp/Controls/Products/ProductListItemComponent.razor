@@ -1,0 +1,28 @@
+﻿@using IMS.CoreBusiness;
+@using IMS.CoreBusiness.DTO
+@inject NavigationManager NavigationManager
+
+@foreach (var prod in Products)
+{
+    <tr>
+        <td><img src="@prod.ImgUrl" height="50" width="50" /></td>
+        <td>@prod.ProductName</td>
+        <td>@prod.Quantity</td>
+        <td>Rs. @prod.Price.ToString()</td>
+        <td>
+            <button type="button" class="btn btn-dark" onclick="@(()=> EditProduct(prod.ProductID))">Edit</button>
+        </td>
+
+    </tr>
+}
+
+
+@code {
+    [Parameter]
+    public List<Product> Products { get; set; } = new List<Product>();
+
+    private void EditProduct(int productId)
+    {
+        NavigationManager.NavigateTo($"/editproduct/{productId}");
+    }
+}

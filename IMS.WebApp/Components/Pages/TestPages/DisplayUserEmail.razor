@@ -1,0 +1,31 @@
+﻿@page "/diplayuserdetailsltest"
+
+
+@*  W O R K I N G  *@
+
+
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<h3>DisplayUserEmail</h3>
+
+<p>Signed in user Email: @useremail</p>
+<p>Signed in user ID   : @userid</p>
+
+@code {
+    private string useremail = "";
+    private string userid = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        userid = user.FindFirstValue(ClaimTypes.NameIdentifier);
+        useremail = authState.User.Identity?.Name;
+    }
+}

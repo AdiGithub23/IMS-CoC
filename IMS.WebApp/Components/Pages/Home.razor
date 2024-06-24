@@ -1,0 +1,27 @@
+﻿@page "/"
+@using IMS.UseCases.Products.interfaces
+
+@inject IViewProductsByNameUseCase ViewProductsByNameUseCase
+
+<PageTitle>Home</PageTitle>
+
+<h1><b>Home Page!</b></h1>
+
+<ul>
+    @foreach (var prd in _products)
+    {
+        <div>
+            <img src="@prd.ImgUrl" height="70" width="100" />
+            <li>@prd.ProductName - @prd.Quantity Remaining</li>
+        </div>
+    }
+</ul>
+
+@code {
+    private List<Product> _products = new List<Product>();
+
+    protected override async Task OnInitializedAsync()
+    {        
+        _products = (await ViewProductsByNameUseCase.ExecuteAsync("")).ToList();
+    }
+}

@@ -1,0 +1,34 @@
+﻿@page "/selectoptionstest"
+
+
+@*  W O R K I N G  *@
+
+
+@rendermode InteractiveServer
+
+<p>Please choose your topping from the list below:</p>
+
+<p>Free topping: @selectedTopping</p>
+
+<select class="select-element" @bind="selectedTopping">
+    @foreach (var topping in toppings)
+    {
+        <option value="@topping.Name">@topping.Name</option>
+    }
+</select>
+
+@code
+{
+    public record Topping(int Id, string Name);
+    public string selectedTopping { get; set; } = "No Topping";
+    public List<Topping> toppings = new List<Topping>()
+    {
+        new Topping(1, "No Topping"),
+        new Topping(2, "Cheese"),
+        new Topping(3, "Onions"),
+        new Topping(4, "Pickles"),
+        new Topping(5, "Avocado"),
+        new Topping(6, "Lettuce")
+    };
+
+}

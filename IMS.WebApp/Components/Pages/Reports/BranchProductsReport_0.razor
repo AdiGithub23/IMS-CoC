@@ -1,0 +1,107 @@
+﻿@page "/branchproductreport_0"
+@rendermode InteractiveServer
+@using IMS.UseCases.Reports.interfaces
+@using IMS.WebApp.ViewModels
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+
+@inject UserManager<IdentityUser> UserManager
+@inject ISearchProductTransactionUseCase SearchProductTransactionUseCase
+@inject IJSRuntime JSRuntime
+
+@* @attribute [Authorize(Policy = "Admin")] *@
+
+<h3>Branch Products Report</h3> <br />
+
+<div class="printarea">
+    <div class="row">
+
+@* 
+        <div class="col">
+            <label for="prod">Product Name</label>
+            <input type="text" id="prod" class="form-control" @bind-value="prodName" placeholder="Search by Name" />
+        </div>
+*@
+@* 
+        <div class="col">
+            <label for="userEmail">Branch</label>
+            <select id="userEmail" class="form-control" @bind="selectedUserEmail">
+                <option value="">Select Branch</option>
+                @foreach (var email in userEmails)
+                {
+                    <option value="@email">@email</option>
+                }
+            </select>
+        </div>
+*@
+@* 
+        <div class="col">
+            <label>&nbsp;</label>
+            <button type="button" class="btn btn-primary form-control" @onclick="SearchProducts">Search</button>
+        </div>
+*@
+
+    </div><br />
+
+
+@if (allProducts != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>All Product Names</th>
+                @foreach (var user in userEmails)
+                {
+                    if (user != "Admin")
+                    {
+                        <th>@user</th>
+                    }
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in allProducts)
+            {
+                <tr>
+                    <td>@item.ProductName</td>
+                    <td> @* Number of specific items in the branch *@ </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+</div>
+
+
+@code {
+    private string prodName = string.Empty;
+    private string selectedUserEmail = string.Empty;
+    private List<string> userEmails = new List<string>();
+    private IEnumerable<Product>? allProducts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        userEmails = await LoadUserEmails();
+        await SearchProducts();
+    }
+
+    private async Task<List<string>> LoadUserEmails()
+    {
+        var users = await UserManager.Users.ToListAsync();
+        return users.Select(u => u.UserName).ToList();
+    }
+
+    private async Task<string> GetUserEmail(string userId)
+    {
+        var user = await UserManager.FindByIdAsync(userId);
+        return user?.Email ?? "Unknown";
+    }
+
+    private async Task SearchProducts()
+    {
+    }
+
+}
