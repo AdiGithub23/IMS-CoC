@@ -10,8 +10,11 @@
 
 <CascadingAuthenticationState>
 
-    <h1>Logged In User - @email</h1>
-    <h1>Cart User - @UserId</h1>
+    @* <h1>Logged In User - @email</h1> *@
+    @* <h1>Cart User - @UserId</h1> *@
+    <h1>Branch Products</h1>
+
+    <button type="button" class="btn btn-primary" @onclick="SellPage">Go To POS</button>
 
     @if (cart != null && cart.Items != null && cart.Items.Any())
     {
@@ -52,7 +55,6 @@
         <p>Your cart is currently empty.</p>
     }
 
-    <button type="button" class="btn btn-primary" @onclick="SellPage">Go To POS</button>
 
 </CascadingAuthenticationState>
 

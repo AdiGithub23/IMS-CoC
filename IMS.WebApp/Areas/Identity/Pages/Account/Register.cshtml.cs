@@ -22,7 +22,7 @@ using Microsoft.Extensions.Logging;
 namespace IMS.WebApp.Areas.Identity.Pages.Account
 {
 
-    //[Authorize(Policy = "Admin")]
+    [Authorize(Policy = "Admin")]
     public class RegisterModel : PageModel
     {
         private readonly SignInManager<IdentityUser> _signInManager;

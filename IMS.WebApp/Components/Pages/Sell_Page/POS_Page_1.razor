@@ -21,7 +21,13 @@
 
 @inject IJSRuntime JSRuntime
 
-<h3>Sell Page for "@UserId"</h3>
+@* Authorization *@
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Policy = "Sales")]
+
+@* <h3>Sell Page for "@UserId"</h3> *@
+<h3>Sales Page</h3>
+
 <br />
 
 @if (cartItems != null && cartItems.Any())
@@ -68,6 +74,10 @@
 
     <button @onclick="@(() => GoTo_Cart(UserId))">Item List</button>
 
+}
+else
+{
+    <p>No Products to Sell</p>
 }
 
 

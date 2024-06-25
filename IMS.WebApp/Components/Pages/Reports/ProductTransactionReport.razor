@@ -10,7 +10,8 @@
 @inject ISearchProductTransactionUseCase SearchProductTransactionUseCase
 @inject IJSRuntime JSRuntime
 
-@* @attribute [Authorize(Policy = "Admin")] *@
+@* Authorization *@
+@attribute [Authorize(Policy = "Admin")]
 
 <h3>Sales Product Transactions</h3> <br />
 

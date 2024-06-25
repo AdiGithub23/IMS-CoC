@@ -17,13 +17,15 @@
 @inject IShoppingCartService ShoppingCartService
 @inject IViewProductsByNameUseCase ViewProductsByNameUseCase
 
-@* 
+
+@* Authorization *@
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Policy = "Admin")]
- *@
 
 
-<h1>Products List - @email</h1>
+
+@* <h1>Products List - @email</h1> *@
+<h1>Products List</h1>
 
 @if (users != null)
 {
@@ -40,7 +42,7 @@
 }
 <button @onclick="@(() => GoTo_Cart(selectedUserId))">Go to Cart</button>
 
-@errorMsg
+@* @errorMsg *@
 
 
 <div class="row">
