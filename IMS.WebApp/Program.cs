@@ -25,10 +25,21 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Sales", policy => policy.RequireClaim("Department", "Sales"));
 });
 
+
+//builder.Services.AddDbContext<AccountDbContext>(options =>
+//{
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("InventoryManagement"));
+//});
 builder.Services.AddDbContext<AccountDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("InventoryManagement"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("InventoryManagement"),
+        sqlServerOptions => sqlServerOptions.EnableRetryOnFailure(
+            maxRetryCount: 5, // Number of retry attempts
+            maxRetryDelay: TimeSpan.FromSeconds(10), // Maximum delay between retries
+            errorNumbersToAdd: null));
 });
+
+
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 {
     options.SignIn.RequireConfirmedEmail = false;
@@ -39,9 +50,18 @@ builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 //builder.Services.AddCascadingAuthenticationState();
 
+
+//builder.Services.AddDbContextFactory<IMSContext>(options =>
+//{
+//    options.UseSqlServer(builder.Configuration.GetConnectionString("InventoryManagement"));
+//});
 builder.Services.AddDbContextFactory<IMSContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("InventoryManagement"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("InventoryManagement"),
+        sqlServerOptions => sqlServerOptions.EnableRetryOnFailure(
+            maxRetryCount: 5, // Number of retry attempts
+            maxRetryDelay: TimeSpan.FromSeconds(10), // Maximum delay between retries
+            errorNumbersToAdd: null));
 });
 
 

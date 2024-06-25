@@ -1,19 +1,34 @@
 ﻿@using IMS.CoreBusiness;
 @using IMS.CoreBusiness.DTO
+@using IMS.UseCases.Products
+@using IMS.UseCases.Products.interfaces
+
 @inject NavigationManager NavigationManager
+@inject IEditProductUseCase EditProductUseCase
 
-@foreach (var prod in Products)
+@if (Products == null)
 {
-    <tr>
-        <td><img src="@prod.ImgUrl" height="50" width="50" /></td>
-        <td>@prod.ProductName</td>
-        <td>@prod.Quantity</td>
-        <td>Rs. @prod.Price.ToString()</td>
-        <td>
-            <button type="button" class="btn btn-dark" onclick="@(()=> EditProduct(prod.ProductID))">Edit</button>
-        </td>
+    <p>Loading products...</p>
+}
+else
+{
+    @foreach (var prod in Products)
+    {
+        <tr>
+            <td><img src="@prod.ImgUrl" height="50" width="50" /></td>
+            <td>@prod.ProductName</td>
+            <td>Rs. @prod.Price.ToString()</td>
+            <td>@prod.Quantity</td>
+            <td>
+                <input type="number" min="1" @bind-value="prod.NewQuantity" @bind-value:event="oninput" />
+                <button type="button" class="btn btn-dark" onclick="@(() => UpdateQuantity(prod))">Update Qty</button>
+            </td>
+            <td>
+                <button type="button" class="btn btn-dark" onclick="@(()=> EditProduct(prod.ProductID))">Edit Product</button>
+            </td>
 
-    </tr>
+        </tr>
+    }
 }
 
 
@@ -24,5 +39,18 @@
     private void EditProduct(int productId)
     {
         NavigationManager.NavigateTo($"/editproduct/{productId}");
+    }
+
+    private async Task UpdateQuantity(Product product)
+    {
+        Console.WriteLine($"Updating Product ID: {product.ProductID}, Original Quantity: {product.Quantity}, Added Quantity: {product.NewQuantity}");
+        product.Quantity += product.NewQuantity;
+        Console.WriteLine($"Updated Quantity: {product.Quantity}");
+        await EditProductUseCase.ExecuteAsync(product);
+        product.NewQuantity = 0;
+
+        // Force re-render to update the UI
+        StateHasChanged();
+
     }
 }
