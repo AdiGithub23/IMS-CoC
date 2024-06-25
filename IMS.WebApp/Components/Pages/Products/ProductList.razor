@@ -8,12 +8,13 @@
 <h3>Product List</h3> <br/>
 
 <SearchProductComponent OnSearchProduct="OnSearchProduct" /> <br />
-Search Term : @searchTerm
+@* Search Term : @searchTerm *@
+<button type="button" class="btn btn-primary" @onclick="AddProduct">Add Product</button>
 
 <ProductListComponent SearchTerm="@searchTerm" />
 
 
-<button type="button" class="btn btn-primary" @onclick="AddProduct">Add Product</button>
+@* <button type="button" class="btn btn-primary" @onclick="AddProduct">Add Product</button> *@
 
 @code {
     private string searchTerm = string.Empty;
