@@ -133,11 +133,14 @@
                     await ShoppingCartService.AddItemToCartAsync(selectedUserId, product.ProductID, selectedQuantity);
 
                     errorMsg = $"{selectedQuantity} {product.ProductName} added to {selectedUserId}'s cart";
+                    quantities[product.ProductID] = 0;
                 }
             }
         }
 
+        StateHasChanged();
         products = (await ViewProductsByNameUseCase.ExecuteAsync("")).ToList();
+
     }
 
 
