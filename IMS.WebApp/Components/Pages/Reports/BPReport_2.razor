@@ -27,10 +27,14 @@
                     <th>Product Name</th>
                     @foreach (var user in users)
                     {
-                        if(user.UserName != "Admin")
+                        if (user.Email != "admin@gmail.com")
                         {
                             <th>@user.UserName</th>
                         }
+                        @* if (user.UserName != "Admin")
+                        {
+                            <th>@user.UserName</th>
+                        } *@
                         
                     }
                 </tr>
@@ -42,10 +46,14 @@
                         <td>@product.ProductName</td>
                         @foreach (var user in users)
                         {
-                            var branchQty = branchProducts.ContainsKey(user) && branchProducts[user].Any(p => p.ProductID == product.ProductID)
-                            ? branchProducts[user].FirstOrDefault(p => p.ProductID == product.ProductID).BranchQty
-                            : -1; // Use -1 to indicate error or missing data
-                            <td>@branchQty</td>
+
+                            if (user.Email != "admin@gmail.com")
+                            {
+                                var branchQty = branchProducts.ContainsKey(user) && branchProducts[user].Any(p => p.ProductID == product.ProductID)
+                                ? branchProducts[user].FirstOrDefault(p => p.ProductID == product.ProductID).BranchQty
+                                : -1; // Use -1 to indicate error or missing data
+                                <td>@branchQty</td>
+                            }
                         }
 
                     </tr>
