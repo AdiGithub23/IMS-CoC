@@ -29,7 +29,8 @@
                     {
                         if (user.Email != "admin@gmail.com")
                         {
-                            <th>@user.UserName</th>
+                            @* <th>@user.UserName</th> *@
+                            <th>@GetUserName(user.Email)</th>
                         }
                         @* if (user.UserName != "Admin")
                         {
@@ -89,6 +90,17 @@
         {
             errorMsg = $"Error initializing page: {ex.Message}";
         }
+    }
+
+    private string GetUserName(string email)
+    {
+        if (string.IsNullOrEmpty(email))
+        {
+            return string.Empty;
+        }
+
+        var parts = email.Split('@');
+        return parts.Length > 0 ? parts[0] : email;
     }
 
     private async Task LoadBranchProducts()
