@@ -19,24 +19,32 @@
             </NavLink>
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="identity/account/register">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Register Branch
-            </NavLink>
-        </div>
+        @* @if (isAdmin)
+        { *@
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="identity/account/register">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Register Branch
+                </NavLink>
+            </div>
+        @* } *@
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="products">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Products
-            </NavLink>
-        </div>
+        @* @if (isAdmin)
+        { *@
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="products">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Products
+                </NavLink>
+            </div>
+        @* } *@
 
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="branchproduct">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Products to Branch
-            </NavLink>
-        </div>
+        @* @if (isAdmin)
+        { *@
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="branchproduct">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Products to Branch
+                </NavLink>
+            </div>
+        @* } *@
 
 
         <div class="nav-item px-3">
@@ -44,13 +52,23 @@
                 <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Branch Products
             </NavLink>
         </div>
+@* 
+        <AuthorizeView Policy="Sales">
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="@GetSellPageUrl()">
+                        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Branch POS
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView> *@
 
-        
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="@GetSellPageUrl()">
                 <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Branch POS
             </NavLink>
         </div>
+        
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="bpreport_2">
@@ -58,17 +76,23 @@
             </NavLink>
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="productreport">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Sales Report
-            </NavLink>
-        </div>
+        @* @if (isAdmin)
+        { *@
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="productreport">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Sales Report
+                </NavLink>
+            </div>
+        @* } *@
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="manageusers">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Branch Authorization
-            </NavLink>
-        </div>
+        @* @if (isAdmin)
+        { *@
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="manageusers">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Branch Authorization
+                </NavLink>
+            </div>
+        @* } *@
 
 
 
@@ -78,12 +102,26 @@
 @code {
 
     private string UserId;
+    private bool isAdmin = false;
 
+
+    // private bool isBrnch = false;
+    private bool UserIsInRole(ClaimsPrincipal user, string role)
+    {
+        return user.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == role);
+    }
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         UserId = authState.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+
+        var user = authState.User;
+
+        isAdmin = UserIsInRole(user, "Admin");
+        // isAdmin = user.IsInRole("Admin");
+        // isBrnch = UserIsInRole(user, "Sales");
     }
 
     private string GetCartUrl()
