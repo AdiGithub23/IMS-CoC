@@ -5,8 +5,17 @@
 @using IMS.UseCases
 @inject IShoppingCartService shoppingCartService
 
+@using IMS.UseCases.PluginInterfaces
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
 @inject AuthenticationStateProvider AuthenticationStateProvider
+
+@inject IProductRepository ProductRepository
+@inject IShoppingCartService ShoppingCartService
+
+@inject UserManager<IdentityUser> UserManager
+@* @using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Policy = "Sales")] *@
 
 <CascadingAuthenticationState>
 
@@ -14,7 +23,7 @@
     @* <h1>Cart User - @UserId</h1> *@
     <h1>Branch Products</h1>
 
-    <button type="button" class="btn btn-primary" @onclick="SellPage">Go To POS</button>
+    <button type="button" class="btn btn-primary" @onclick="GoToSellPage">Go To POS</button>
 
     @if (cart != null && cart.Items != null && cart.Items.Any())
     {
@@ -25,6 +34,7 @@
                     <th>Product Name</th>
                     <th>Quantity</th>
                     <th>Price</th>
+                    <th>Transfer Qty</th>
                     <th></th>
                 </tr>
             </thead>
@@ -37,24 +47,55 @@
                         <td>@item.Quantity</td>
                         <td>@(item.Product.Price * item.Quantity)</td>
 
-                        <AuthorizeView Policy="Admin">
-                            <Authorized>
-                                <td>
-                                    <button @onclick="@(() => RemoveFromCart(item.CartItemId))">Remove</button>
-                                </td>
-                            </Authorized>
-                        </AuthorizeView>                        
-                                               
+                        <td>
+                            <input type="number" min="1" @bind="quantities[item.CartItemId]" class="form-control" />
+                        </td>
+                        <td>
+                            <button class="btn btn-primary" @onclick="@(() => TransferItem(item.CartItemId))">Transfer</button>
+                        </td>
+
+                        @*
+                <AuthorizeView Policy="Admin">
+                <Authorized>
+                <td>
+                <button @onclick="@(() => RemoveFromCart(item.CartItemId))">Remove</button>
+                </td>
+                </Authorized>
+                </AuthorizeView>
+                *@
+
                     </tr>
                 }
             </tbody>
         </table>
+
+
+        @if (users != null)
+        {
+            <div class="col-md-6">
+                <label for="selectedUser">Select User:</label>
+                <select @bind="selectedUserId" class="form-control">
+                    <option>Select Branch</option>
+                    @foreach (var user in users)
+                    {
+                        <option value="@user.Id">@user.UserName</option>
+                    }
+                </select>
+            </div>
+        }
     }
     else
     {
         <p>Your cart is currently empty.</p>
     }
 
+    <button type="button" class="btn btn-primary" @onclick="GoToSellPage">Go To POS</button>
+    @if (!string.IsNullOrEmpty(errorMsg))
+    {
+        <p class="text-danger">@errorMsg</p>
+    }
+
+    @selectedUserId
 
 </CascadingAuthenticationState>
 
@@ -65,13 +106,67 @@
     private Cart? cart;
     private List<CartItem> cartitems;
 
+
+    private string selectedUserId;
+    private List<IdentityUser>? users;
+    private string errorMsg = "";
+    private Dictionary<int, int> quantities = new Dictionary<int, int>();
+
+
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         email = authState.User.Identity?.Name;
 
+        try
+        {
+            users = UserManager.Users.ToList();
+        }
+        catch (Exception ex)
+        {
+            errorMsg = $"Error retrieving users: {ex.Message}";
+        }
+
         cart = await shoppingCartService.GetCartByUserIdAsync(UserId);
         cartitems = cart?.Items?.ToList() ?? new List<CartItem>();
+
+
+        foreach (var item in cartitems)
+        {
+            quantities[item.CartItemId] = 0; // or any default value you prefer
+        }
+    }
+
+    private async Task TransferItem(int cartItemId)
+    {
+        if (selectedUserId == null)
+        {
+            errorMsg = "No User is Selected!";
+            return;
+        }
+
+        if (!quantities.TryGetValue(cartItemId, out var selectedQuantity) || selectedQuantity <= 0)
+        {
+            errorMsg = "Please enter a valid quantity to transfer.";
+            return;
+        }
+
+        try
+        {
+            // Implement the actual transfer logic here using your shoppingCartService
+            // await shoppingCartService.AddItemToCartAsync(selectedUserId, cartItemId, selectedQuantity);
+            await shoppingCartService.TransferItemsAsync(UserId, selectedUserId, cartItemId, selectedQuantity);
+
+
+            // Update quantities and display success message
+            errorMsg = $"{selectedQuantity} item(s) transferred to {selectedUserId}'s cart.";
+            quantities[cartItemId] = 0; // Reset quantity after transfer
+        }
+        catch (Exception ex)
+        {
+            // Handle any exceptions that might occur during the transfer
+            errorMsg = $"Error transferring items: {ex.Message}";
+        }
     }
 
     private async Task RemoveFromCart(int cartItemId)
@@ -79,7 +174,7 @@
         await shoppingCartService.RemoveCartItemAsync(cartItemId);
     }
 
-    private void SellPage()
+    private void GoToSellPage()
     {
         NavigationManager.NavigateTo($"/sellpage/{UserId}");
     }

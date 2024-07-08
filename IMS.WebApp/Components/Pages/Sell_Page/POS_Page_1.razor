@@ -22,7 +22,6 @@
 @inject IJSRuntime JSRuntime
 
 @* Authorization *@
-@using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Policy = "Sales")]
 
 @* <h3>Sell Page for "@UserId"</h3> *@
@@ -30,42 +29,46 @@
 
 <br />
 
+<div class="page-layout">
+    <div class="form-container">
 @if (cartItems != null && cartItems.Any())
-{
-    <EditForm Model="sellViewModel" OnValidSubmit="Sell" id="sell-form">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
+        {
+            <EditForm Model
+            ="sellViewModel" OnValidSubmit
+            ="Sell" id="sell-form">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
 
-        <div class="form-group">
-            <label for="po">Sell Order</label>
-            <InputText id="po" class="form-control" @bind-Value="sellViewModel.SalesOrderNumber" readonly></InputText>
-        </div>
+                <div class="form-group">
+                    <label for="po">Sell Order</label>
+                    <InputText id="po" class="form-control" @bind-Value="sellViewModel.SalesOrderNumber" readonly></InputText>
+                </div>
 
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Product Image</th>
-                    <th>Product Name</th>
-                    <th>Branch Qty</th>
-                    <th>Qty to Sell</th>
-                    <th>Price</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in cartItems)
-                {
-                    <tr>
-                        <td><img src="@item.Product.ImgUrl" width="50" height="50" /></td>
-                        <td>@item.Product.ProductName</td>
-                        <td>@item.Quantity</td>
-                        <td>
-                            <InputNumber @bind-Value="item.QuantityToSell" class="form-control"/>
-                        </td>
-                        <td>@(item.Product.Price * item.QuantityToSell)</td>
-                    </tr>
-                }
-            </tbody>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Product Image</th>
+                            <th>Product Name</th>
+                            <th>Branch Qty</th>
+                            <th>Qty to Sell</th>
+                            <th>Price</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in cartItems)
+                        {
+                            <tr>
+                                <td><img src="@item.Product.ImgUrl" width="50" height="50" /></td>
+                                <td>@item.Product.ProductName</td>
+                                <td>@item.Quantity</td>
+                                <td>
+                                    <InputNumber @bind-Value="item.QuantityToSell" class="form-control"/>
+                                </td>
+                                <td>@(item.Product.Price * item.QuantityToSell)</td>
+                            </tr>
+                        }
+                    </tbody>
         </table>
 
         <button type="submit" class="btn btn-primary">Sell</button>
@@ -73,13 +76,78 @@
     </EditForm>
 
     <button @onclick="@(() => GoTo_Cart(UserId))">Item List</button>
+    }
+    </div>
 
-}
-else
-{
-    <p>No Products to Sell</p>
-}
+    <div class="receipt-container">
+        @* @if (showReceipt && receiptItems.Any()) *@
+        @if (showReceipt)
+        {
+            <div class="floating-card">
+                <h4>Receipt</h4>
+                <div>
+                    <p>Sales Order Number: @receiptSalesOrderNumber</p>
+                    <p>Sold by: @UserEmail</p>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Quantity Sold</th>
+                                <th>Unit Price</th>
+                                <th>Total Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in receiptItems)
+                            {
+                                <tr>
+                                    <td>@item.ProductName</td>
+                                    <td>@item.QuantitySold</td>
+                                    <td>@item.UnitPrice</td>
+                                    <td>@(item.UnitPrice * item.QuantitySold)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <button class="btn btn-secondary" @onclick="CloseReceipt">Close</button>
+            </div>
+        }
+    </div>
+</div>
 
+<style>
+    .page-layout {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .form-container {
+        flex: 1;
+        margin-right: 350px;
+    }
+
+    .receipt-container {
+        flex: 1;
+        position: absolute;
+    }
+
+    .floating-card {
+        position: fixed;
+        top: 75px;
+        right: 20px;
+        width: 350px;
+        padding: 20px;
+        background-color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        z-index: 1000;
+    }
+
+        .floating-card h4 {
+            margin-top: 0;
+        }
+</style>
 
 @code {
     public string UserEmail = "";
@@ -88,6 +156,10 @@ else
     public string UserId { get; set; }
     private List<CartItemViewModel> cartItems;
     private SellViewModel sellViewModel = new SellViewModel();
+
+    private bool showReceipt = true;
+    private string receiptSalesOrderNumber = "";
+    private List<ReceiptItem> receiptItems = new List<ReceiptItem>();
 
 
     protected override async Task OnInitializedAsync()
@@ -133,6 +205,9 @@ else
         var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
         UserEmail = authState.User.Identity?.Name;
 
+        receiptItems.Clear();
+        receiptSalesOrderNumber = sellViewModel.SalesOrderNumber;
+
         foreach (var item in cartItems)
         {
             if (item.QuantityToSell > 0 && item.QuantityToSell <= item.Quantity)
@@ -155,8 +230,19 @@ else
                 {
                     await ShoppingCartService.UpdateCartItemAsync(item.CartItemId, item.Quantity);
                 }
+
+                receiptItems.Add(new ReceiptItem
+                    {
+                        ProductName = item.Product.ProductName,
+                        QuantitySold = item.QuantityToSell,
+                        UnitPrice = item.UnitPrice
+                    });
+
             }
         }
+
+        // Show the receipt
+        showReceipt = true;
 
         // Refresh the cartItems after selling
         cartItems = (await ShoppingCartService.GetCartByUserIdAsync(UserId))?.Items?.Select(ci => new CartItemViewModel
@@ -172,7 +258,12 @@ else
         // Generate a new sales order number after selling
         sellViewModel.SalesOrderNumber = GenerateSalesOrderNumber();
     }
-    
+
+    private void CloseReceipt()
+    {
+        showReceipt = false;
+    }
+
 
     public async Task<List<ItemViewModel>?> SearchProduct(string name)
     {
@@ -184,6 +275,13 @@ else
     private async Task GoTo_Cart(string userId)
     {
         NavigationManager.NavigateTo($"/usercart/{userId}");
+    }
+
+    public class ReceiptItem
+    {
+        public string ProductName { get; set; }
+        public int QuantitySold { get; set; }
+        public double UnitPrice { get; set; }
     }
 
 }

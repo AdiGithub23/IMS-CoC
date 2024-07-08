@@ -49,5 +49,32 @@ namespace IMS.UseCases
             await cartRepository.RemoveCartItemAsync(cartItemId);
         }
 
+        public async Task TransferItemsAsync(string fromUserId, string toUserId, int cartItemId, int quantity)
+        {
+            try
+            {
+                // Get the cart item from the source user's cart
+                var cartItem = await cartRepository.GetCartItemAsync(fromUserId, cartItemId);
+
+                if (cartItem != null)
+                {
+                    // Remove items from the source cart
+                    await cartRepository.UpdateCartItemAsync(cartItemId, cartItem.Quantity - quantity);
+
+                    // Add items to the destination user's cart
+                    await cartRepository.AddItemToCartAsync(toUserId, cartItem.ProductId, quantity);
+                }
+                else
+                {
+                    throw new Exception("Cart item not found.");
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Error transferring items: {ex.Message}");
+                throw;
+            }
+        }
+
     }
 }

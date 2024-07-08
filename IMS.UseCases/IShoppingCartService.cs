@@ -13,5 +13,6 @@ namespace IMS.UseCases
         Task<Cart?> GetCartByUserIdAsync(string userId);
         Task UpdateCartItemAsync(int cartItemId, int quantity);
         Task RemoveCartItemAsync(int cartItemId);
+        Task TransferItemsAsync(string fromUserId, string toUserId, int cartItemId, int quantity);
     }
 }

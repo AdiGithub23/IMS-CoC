@@ -74,6 +74,12 @@ namespace IMS.Plugins.EfCoreSqlServer
                 await context.SaveChangesAsync();
             }
         }
-    
+
+        public async Task<CartItem?> GetCartItemAsync(string userId, int cartItemId)
+        {
+            return await context.CartItems
+                .FirstOrDefaultAsync(ci => ci.Cart.UserId == userId && ci.CartItemId == cartItemId);
+        }
+
     }
 }
