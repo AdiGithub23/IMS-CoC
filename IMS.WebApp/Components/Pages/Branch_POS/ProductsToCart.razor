@@ -42,7 +42,7 @@
 }
 <button @onclick="@(() => GoTo_Cart(selectedUserId))">Go to Cart</button>
 
-@* @errorMsg *@
+@errorMsg
 
 
 <div class="row">
@@ -135,9 +135,15 @@
                     await ShoppingCartService.AddItemToCartAsync(selectedUserId, product.ProductID, selectedQuantity);
 
                     errorMsg = $"{selectedQuantity} {product.ProductName} added to {selectedUserId}'s cart";
-                    quantities[product.ProductID] = 0;
+                    // quantities[product.ProductID] = 0;
                 }
             }
+        }
+
+        // Reset all quantities to 0 after adding to the cart
+        foreach (var productId in products.Select(p => p.ProductID))
+        {
+            quantities[productId] = 0;
         }
 
         StateHasChanged();

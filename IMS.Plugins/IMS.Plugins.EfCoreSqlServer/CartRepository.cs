@@ -19,7 +19,7 @@ namespace IMS.Plugins.EfCoreSqlServer
             this.context = context;
         }
 
-        public async Task AddItemToCartAsync(string userId, int productId, int quantity =1)
+        public async Task AddItemToCartAsync(string userId, int productId, int quantity = 1)
         {
             #region Before the AddToCart Exception
             var cart = await GetCartByUserIdAsync(userId);
@@ -80,6 +80,59 @@ namespace IMS.Plugins.EfCoreSqlServer
             return await context.CartItems
                 .FirstOrDefaultAsync(ci => ci.Cart.UserId == userId && ci.CartItemId == cartItemId);
         }
+
+        // Branch Item Transfer
+
+        public async Task CreateTransferRequestAsync(string fromUserId, string toUserId, int cartItemId, int quantity)
+        {
+            var transferRequest = new TransferRequest
+            {
+                FromUserId = fromUserId,
+                ToUserId = toUserId,
+                CartItemId = cartItemId,
+                Quantity = quantity,
+                IsAccepted = false
+            };
+
+            context.TransferRequests.Add(transferRequest);
+            await context.SaveChangesAsync();
+        }
+
+        public async Task<List<TransferRequest>> GetTransferRequestsByUserIdAsync(string userId)
+        {
+            return await context.TransferRequests
+                .Where(tr => tr.ToUserId == userId && !tr.IsAccepted)
+                .ToListAsync();
+        }
+
+        public async Task AcceptTransferRequestAsync(int transferRequestId)
+        {
+            var transferRequest = await context.TransferRequests.FindAsync(transferRequestId);
+            if (transferRequest != null)
+            {
+                // Transfer the items as before
+                var cartItem = await GetCartItemAsync(transferRequest.FromUserId, transferRequest.CartItemId);
+                if (cartItem != null)
+                {
+                    await UpdateCartItemAsync(transferRequest.CartItemId, cartItem.Quantity - transferRequest.Quantity);
+                    await AddItemToCartAsync(transferRequest.ToUserId, cartItem.ProductId, transferRequest.Quantity);
+                }
+
+                transferRequest.IsAccepted = true;
+                await context.SaveChangesAsync();
+            }
+        }
+
+        public async Task CancelTransferRequestAsync(int transferRequestId)
+        {
+            var transferRequest = await context.TransferRequests.FindAsync(transferRequestId);
+            if (transferRequest != null)
+            {
+                context.TransferRequests.Remove(transferRequest);
+                await context.SaveChangesAsync();
+            }
+        }
+
 
     }
 }

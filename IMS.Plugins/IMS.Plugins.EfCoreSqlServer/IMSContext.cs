@@ -12,8 +12,9 @@ namespace IMS.Plugins.EfCoreSqlServer
 
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductTransaction> ProductTransactions { get; set; }
-        public DbSet<Cart> Carts { get; set; } 
+        public DbSet<Cart> Carts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<TransferRequest> TransferRequests { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

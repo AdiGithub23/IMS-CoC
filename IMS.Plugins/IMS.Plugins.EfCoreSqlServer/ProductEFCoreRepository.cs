@@ -43,7 +43,7 @@ namespace IMS.Plugins.EFCoreSqlServer
             using var db = contextFactory.CreateDbContext();
             return await Task.FromResult(db.Products.FirstOrDefault(x => x.ProductID == productId));
         }
-        
+
         public async Task<IEnumerable<Product>> GetProductsByNameAsync(string name)
         {
             using var db = contextFactory.CreateDbContext();
@@ -55,7 +55,7 @@ namespace IMS.Plugins.EFCoreSqlServer
         {
             using var db = contextFactory.CreateDbContext();
             var prod = await db.Products.FirstOrDefaultAsync(x => x.ProductID == product.ProductID);
-                       
+
             if (prod != null)
             {
                 prod.ProductName = product.ProductName;

@@ -13,8 +13,15 @@ namespace IMS.UseCases.PluginInterfaces
         Task<Cart?> GetCartByUserIdAsync(string userId);
         Task UpdateCartItemAsync(int cartItemId, int quantity);
         Task RemoveCartItemAsync(int cartItemId);
-
         Task<CartItem?> GetCartItemAsync(string userId, int cartItemId);
+
+
+        Task CreateTransferRequestAsync(string fromUserId, string toUserId, int cartItemId, int quantity);
+        Task<List<TransferRequest>> GetTransferRequestsByUserIdAsync(string userId);
+        Task AcceptTransferRequestAsync(int transferRequestId);
+        Task CancelTransferRequestAsync(int transferRequestId);
+
+
     }
 }
 

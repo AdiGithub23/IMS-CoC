@@ -33,9 +33,7 @@
     <div class="form-container">
 @if (cartItems != null && cartItems.Any())
         {
-            <EditForm Model
-            ="sellViewModel" OnValidSubmit
-            ="Sell" id="sell-form">
+            <EditForm Model="sellViewModel" OnValidSubmit="Sell" id="sell-form">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
 

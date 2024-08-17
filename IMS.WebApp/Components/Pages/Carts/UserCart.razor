@@ -23,8 +23,6 @@
     @* <h1>Cart User - @UserId</h1> *@
     <h1>Branch Products</h1>
 
-    <button type="button" class="btn btn-primary" @onclick="GoToSellPage">Go To POS</button>
-
     @if (cart != null && cart.Items != null && cart.Items.Any())
     {
         <table class="table">
@@ -89,6 +87,19 @@
         <p>Your cart is currently empty.</p>
     }
 
+    @if (pendingTransfers != null && pendingTransfers.Any())
+    {
+        @foreach (var transfer in pendingTransfers)
+        {
+            <div>
+                <p>You have items to collect from @transfer.FromUserId!</p>
+                <button class="btn btn-success" @onclick="() => AcceptTransfer(transfer.TransferRequestId)">Accept</button>
+                <button class="btn btn-danger" @onclick="() => CancelTransfer(transfer.TransferRequestId)">Cancel</button>
+            </div>
+        }
+    }
+
+
     <button type="button" class="btn btn-primary" @onclick="GoToSellPage">Go To POS</button>
     @if (!string.IsNullOrEmpty(errorMsg))
     {
@@ -105,12 +116,12 @@
     private string? email;
     private Cart? cart;
     private List<CartItem> cartitems;
-
-
     private string selectedUserId;
     private List<IdentityUser>? users;
     private string errorMsg = "";
     private Dictionary<int, int> quantities = new Dictionary<int, int>();
+
+    private List<TransferRequest> pendingTransfers;
 
 
     protected override async Task OnInitializedAsync()
@@ -135,7 +146,55 @@
         {
             quantities[item.CartItemId] = 0; // or any default value you prefer
         }
+
+        pendingTransfers = new List<TransferRequest>(); // Initialize to avoid null reference
+        await LoadData();
     }
+    private async Task LoadData()
+    {
+        // Load the cart and pending transfers
+        cart = await shoppingCartService.GetCartByUserIdAsync(UserId);
+        cartitems = cart?.Items?.ToList() ?? new List<CartItem>();
+
+        pendingTransfers = await shoppingCartService.GetTransferRequestsByUserIdAsync(UserId) ?? new List<TransferRequest>();
+
+        // Initialize quantities for each item in the cart
+        foreach (var item in cartitems)
+        {
+            if (!quantities.ContainsKey(item.CartItemId))
+            {
+                quantities[item.CartItemId] = 0;
+            }
+        }
+    }
+    // private async Task LoadData()
+    // {
+    //     // try
+    //     // {
+    //     //     // Load pending transfer requests
+    //     //     pendingTransfers = await shoppingCartService.GetTransferRequestsByUserIdAsync(UserId) ?? new List<TransferRequest>();
+    //     // }
+    //     // catch (Exception ex)
+    //     // {
+    //     //     errorMsg = $"Error loading transfer requests: {ex.Message}";
+    //     // }
+
+    //     pendingTransfers = await shoppingCartService.GetTransferRequestsByUserIdAsync(UserId);
+    // }
+
+    private async Task AcceptTransfer(int transferRequestId)
+    {
+        await shoppingCartService.AcceptTransferRequestAsync(transferRequestId);
+        await LoadData(); // Reload the data to refresh the UI
+    }
+
+    private async Task CancelTransfer(int transferRequestId)
+    {
+        await shoppingCartService.CancelTransferRequestAsync(transferRequestId);
+        await LoadData(); // Reload the data to refresh the UI
+    }
+
+
 
     private async Task TransferItem(int cartItemId)
     {
