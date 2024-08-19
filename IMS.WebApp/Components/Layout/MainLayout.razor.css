@@ -1,3 +1,21 @@
+.navbar-toggler {
+    appearance: none;
+    cursor: pointer;
+    width: 3.5rem;
+    height: 2.5rem;
+    color: white;
+    position: absolute;
+    top: 0.5rem;
+    right: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%280, 0, 0, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") no-repeat center/1.75rem rgba(255, 255, 255, 0.1);
+}
+
+.navbar-toggler:checked {
+    background-color: rgba(0, 0, 0, 0.5); /* Change background color when toggler is checked */
+}
+
+
 .page {
     position: relative;
     display: flex;
@@ -9,11 +27,17 @@ main {
 }
 
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    /*background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);*/
+    /*background: url(images/side-img.jpg) no-repeat;*/
+
+    background: rgb(15,183,241);
+    background: linear-gradient(180deg, rgba(15,183,241,1) 16%, rgba(233,11,150,1) 98%);
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
 }
 
 .top-row {
-    background-color: #f7f7f7;
+    background-color: rgba(15,183,241,1);
     border-bottom: 1px solid #d6d5d5;
     justify-content: flex-end;
     height: 3.5rem;
