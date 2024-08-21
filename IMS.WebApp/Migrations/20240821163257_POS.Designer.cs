@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IMS.WebApp.Migrations
 {
     [DbContext(typeof(AccountDbContext))]
-    [Migration("20240624103325_Db_Host_01")]
-    partial class Db_Host_01
+    [Migration("20240821163257_POS")]
+    partial class POS
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

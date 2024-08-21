@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace IMS.WebApp.Migrations
 {
     /// <inheritdoc />
-    public partial class Identity_Pages_Enhancements_01 : Migration
+    public partial class POS : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

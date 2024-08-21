@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace IMS.Plugins.EfCoreSqlServer.Migrations
 {
     /// <inheritdoc />
-    public partial class ProductsToCartPageBindingTest01 : Migration
+    public partial class POS : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,7 +33,8 @@ namespace IMS.Plugins.EfCoreSqlServer.Migrations
                     ProductName = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     Quantity = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<double>(type: "float", nullable: false),
-                    ImgUrl = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    ImgUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BranchQty = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -97,6 +98,31 @@ namespace IMS.Plugins.EfCoreSqlServer.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "TransferRequests",
+                columns: table => new
+                {
+                    TransferRequestId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FromUserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ToUserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CartItemId = table.Column<int>(type: "int", nullable: false),
+                    Quantity = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsAccepted = table.Column<bool>(type: "bit", nullable: false),
+                    IsRejected = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TransferRequests", x => x.TransferRequestId);
+                    table.ForeignKey(
+                        name: "FK_TransferRequests_CartItems_CartItemId",
+                        column: x => x.CartItemId,
+                        principalTable: "CartItems",
+                        principalColumn: "CartItemId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_CartItems_CartId",
                 table: "CartItems",
@@ -111,16 +137,24 @@ namespace IMS.Plugins.EfCoreSqlServer.Migrations
                 name: "IX_ProductTransactions_ProductId",
                 table: "ProductTransactions",
                 column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TransferRequests_CartItemId",
+                table: "TransferRequests",
+                column: "CartItemId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CartItems");
+                name: "ProductTransactions");
 
             migrationBuilder.DropTable(
-                name: "ProductTransactions");
+                name: "TransferRequests");
+
+            migrationBuilder.DropTable(
+                name: "CartItems");
 
             migrationBuilder.DropTable(
                 name: "Carts");
