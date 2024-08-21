@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IMS.Plugins.EfCoreSqlServer.Migrations
 {
     [DbContext(typeof(IMSContext))]
-    [Migration("20240608122630_Identity_Pages_Enhancements_01")]
-    partial class Identity_Pages_Enhancements_01
+    [Migration("20240821163220_POS")]
+    partial class POS
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -151,6 +151,44 @@ namespace IMS.Plugins.EfCoreSqlServer.Migrations
                     b.ToTable("ProductTransactions");
                 });
 
+            modelBuilder.Entity("IMS.CoreBusiness.TransferRequest", b =>
+                {
+                    b.Property<int>("TransferRequestId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TransferRequestId"));
+
+                    b.Property<int>("CartItemId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FromUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsAccepted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsRejected")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ToUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("TransferRequestId");
+
+                    b.HasIndex("CartItemId");
+
+                    b.ToTable("TransferRequests");
+                });
+
             modelBuilder.Entity("IMS.CoreBusiness.CartItem", b =>
                 {
                     b.HasOne("IMS.CoreBusiness.Cart", "Cart")
@@ -179,6 +217,17 @@ namespace IMS.Plugins.EfCoreSqlServer.Migrations
                         .IsRequired();
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("IMS.CoreBusiness.TransferRequest", b =>
+                {
+                    b.HasOne("IMS.CoreBusiness.CartItem", "CartItem")
+                        .WithMany()
+                        .HasForeignKey("CartItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CartItem");
                 });
 
             modelBuilder.Entity("IMS.CoreBusiness.Cart", b =>
