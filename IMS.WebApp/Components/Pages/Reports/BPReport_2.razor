@@ -16,7 +16,7 @@
 @inject IShoppingCartService ShoppingCartService
 @inject IViewProductsByNameUseCase ViewProductsByNameUseCase
 
-<h3>Branch Products Report</h3>
+<h1 class="title-text">Branch Products Report</h1>
 
 <div class="row">
     @if (branchProducts != null)
@@ -155,3 +155,19 @@
         }
     }
 }
+
+<style>
+    .title-text {
+        text-align: center;
+        font-family: "Philosopher", sans-serif;
+        font-weight: 700;
+        font-style: normal;
+        font-size: 40px;
+        margin-bottom: 20px;
+    }
+</style>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Changa:wght@200..800&family=Philosopher:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">

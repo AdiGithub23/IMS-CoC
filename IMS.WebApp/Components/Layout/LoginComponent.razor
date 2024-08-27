@@ -6,7 +6,7 @@
 <div class="top-bar">
     <!-- Left side links -->
     <div class="left-links">
-        <a href="/">Home</a>
+        <a href="/" class="nav-items">Home</a>
 @*         <a href="/about">About</a>
         <a href="/contact">Emagency Contacts</a> *@
     </div>
@@ -15,12 +15,12 @@
     <div class="right-links">
         <Microsoft.AspNetCore.Components.Authorization.AuthorizeView>
             <Authorized>
-                <a href="/identity/account/manage">Profile</a>
-                <a href="/identity/account/logout">Sign out</a>
+                <a href="/identity/account/manage" class="nav-items">Profile</a>
+                <a href="/identity/account/logout" class="nav-items">Sign out</a>
             </Authorized>
             <NotAuthorized>
                 @* <a href="/identity/account/register">Register</a> *@
-                <a href="/identity/account/login">Sign in</a>
+                <a href="/identity/account/login" class="nav-items">Sign in</a>
             </NotAuthorized>
         </Microsoft.AspNetCore.Components.Authorization.AuthorizeView>
 
@@ -78,4 +78,19 @@
         font-weight: bold;
         font-size: large;
     }
+
+  
+    .nav-items {
+        text-align: center;
+        font-family: "Titillium Web", sans-serif;
+        font-weight: 700;
+        font-style: normal;
+        font-size: 20px;
+        
+    }
 </style>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
