@@ -5,11 +5,29 @@
 
 @attribute [Authorize(Policy = "Admin")]
 
-<h3>Product List</h3> <br/>
 
-<SearchProductComponent OnSearchProduct="OnSearchProduct" /> <br />
-@* Search Term : @searchTerm *@
-<button type="button" class="btn btn-primary" @onclick="AddProduct">Add Product</button>
+<div class="container">
+    <div class="row">
+        <!-- Left Column -->
+        <div class="col-md-4">
+            <h1 class="title-text">Product List</h1> <br/>
+        </div>
+
+        
+        <div class="col-md-6">
+            <SearchProductComponent OnSearchProduct="OnSearchProduct" /> <br />
+            @* Search Term : @searchTerm *@
+        </div>
+        <div class="col-md-2 addproduct ">
+
+            <button type="button" class="btn btn-primary" @onclick="AddProduct">Add Product</button>
+
+            
+
+        </div>
+    </div>
+</div>
+
 
 <ProductListComponent SearchTerm="@searchTerm" />
 
@@ -28,3 +46,18 @@
         NavigationManager.NavigateTo("/addproduct");
     }
 }
+
+ <style>
+    .title-text {
+        text-align: center;
+        font-family: "Philosopher", sans-serif;
+        font-weight: 700;
+        font-style: normal;
+        font-size: 40px;
+    }
+</style>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Changa:wght@200..800&family=Philosopher:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">

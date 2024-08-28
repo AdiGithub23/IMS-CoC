@@ -5,17 +5,83 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1><b>Welcome to Cake O' Clock!</b></h1>
+<div class="title">
+    <h1 class="title-text">Welcome to Cake O' Inventory and POS!</h1>
+    <h4 class="title-date">@DateTime.Now.ToString("MMMM dd, yyyy")</h4>
+</div>
 
-<ul>
-    @foreach (var prd in _products)
-    {
-        <div>
-            <img src="@prd.ImgUrl" height="70" width="100" />
-            <li>@prd.ProductName (Rs. @prd.Price) - @prd.Quantity Remaining</li>
-        </div>
+<div class="container">
+    <div class="row">
+        @foreach (var prd in _products)
+        {
+            <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
+                <div class="card tile-card">
+                    <img src="@prd.ImgUrl" class="card-img-top" alt="@prd.ProductName" />
+                    <div class="card-body text-center">
+                        <h5 class="card-title">@prd.ProductName</h5>
+                        <p class="price-text">Rs. @prd.Price</p>
+                        <div class="remaining"> 
+                            <p class="card-text">@prd.Quantity Remaining left</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .tile-card {
+        width: 100%; /* Ensures the card takes the full width of the column */
+        height: 260px; /* Fixed height */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    
     }
-</ul>
+
+        .tile-card img {
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .tile-card .card-body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .tile-card .card-title {
+            font-weight: 700; 
+            text-align:center;
+            font-size: 14px;
+            line-height: 1.2; /* Line height of the title */
+            min-height: 2.4em;
+        }
+
+        .tile-card .price-text {
+            font-weight:400;
+            color:slategrey;
+            margin-bottom: 0.25rem;
+        }
+
+        .tile-card .card-text {
+            
+            font-size: 11px;
+            font-weight:500;
+            color:blue
+        }
+        .remaining {
+            margin-bottom: 20px;
+        }
+
+
+ 
+
+</style>
+
+
 
 @code {
     private List<Product> _products = new List<Product>();
@@ -25,3 +91,35 @@
         _products = (await ViewProductsByNameUseCase.ExecuteAsync("")).ToList();
     }
 }
+
+
+
+<style>
+
+
+    .title-text {
+        text-align: center;
+        font-family: "Philosopher", sans-serif;
+        font-weight: 700;
+        font-style: normal;
+        font-size: 40px;
+    }
+
+    .title-date {
+        text-align: center;
+        font-family: "Philosopher", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 30px;
+        margin-bottom: 20px;
+    }
+</style>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Changa:wght@200..800&family=Philosopher:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Changa:wght@200..800&family=Philosopher:ital,wght@0,400;0,700;1,400;1,700&family=Saira:ital,wght@0,100..900;1,100..900&family=Tenor+Sans&display=swap" rel="stylesheet">

@@ -1,0 +1,13 @@
+﻿
+
+
+@media (max-width: 575.98px) {
+    .tile-card {
+        height: 400px; /* Increased height for col-12 */
+    }
+
+        .tile-card img {
+            height: 200px; 
+            margin-top:40px;
+        }
+}
